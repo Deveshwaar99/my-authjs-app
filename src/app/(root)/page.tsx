@@ -1,5 +1,4 @@
 import { LoginButton } from '@/components/auth/login-button'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Poppins } from 'next/font/google'
 
@@ -16,8 +15,8 @@ export default function Home() {
         </h1>
         <p>Custom implementation of authentication service</p>
         <div>
-          <LoginButton mode="modal" asChild>
-            <Button>SignIn</Button>
+          <LoginButton mode="redirect" asChild>
+            SignIn
           </LoginButton>
         </div>
       </div>
