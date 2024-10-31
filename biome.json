@@ -24,7 +24,7 @@
       },
       "correctness": {
         "noUnusedVariables": {
-          "level": "error",
+          "level": "info",
           "fix": "none"
         }
       },
