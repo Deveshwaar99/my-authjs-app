@@ -15,9 +15,16 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LoginSchema } from '../../../schema'
+import FormStatus from '@/components/form-status'
+import { useState, useTransition } from 'react'
+import { loginAction } from '@/actions/login-action'
+import { LoginSchema } from '@/schema'
 
 function LoginForm() {
+  const [formStatus, setFormStatus] = useState<
+    { status: 'error' | 'success'; message: string } | undefined
+  >()
+  const [isPending, startTransition] = useTransition()
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -28,9 +35,11 @@ function LoginForm() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof LoginSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+    setFormStatus(undefined)
+    startTransition(async () => {
+      const response = await loginAction(values)
+      setFormStatus(response)
+    })
   }
 
   return (
@@ -50,7 +59,12 @@ function LoginForm() {
                 <FormItem>
                   <FormLabel className="text-zinc-800">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="simon@example.com" {...field} type="email" />
+                    <Input
+                      placeholder="example@email.com"
+                      {...field}
+                      type="email"
+                      disabled={isPending}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -63,14 +77,15 @@ function LoginForm() {
                 <FormItem>
                   <FormLabel className="text-zinc-800">Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="******" {...field} type="password" />
+                    <Input placeholder="******" {...field} type="password" disabled={isPending} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <Button type="submit" className="w-full">
+          <FormStatus status={formStatus?.status} message={formStatus?.message} />
+          <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
         </form>
