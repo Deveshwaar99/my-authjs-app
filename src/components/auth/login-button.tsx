@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
+import { Button } from '../ui/button'
 
 type LoginButtonProps = PropsWithChildren & {
   mode: 'modal' | 'redirect'
@@ -17,8 +18,8 @@ export function LoginButton({ children, mode = 'redirect', asChild }: LoginButto
   if (mode === 'modal') return <span>Modal Implementation</span>
 
   return (
-    <button type="button" onClick={onClick} className="cursor-pointer">
+    <Button type="button" onClick={onClick} className="cursor-pointer">
       {children}
-    </button>
+    </Button>
   )
 }
