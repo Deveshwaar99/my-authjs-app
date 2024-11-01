@@ -24,6 +24,19 @@ export const loginAction = async (
           return { status: 'error', message: 'Somthing went wrong!' }
       }
     }
+
     throw error // CHECK THIS BUG
+  }
+}
+
+export async function loginWithProvider(provider: 'google' | 'github') {
+  try {
+    await signIn(provider, { redirectTo: DEFAULT_LOGIN_REDIRECT })
+  } catch (error) {
+    console.error('[PROVIDERS_AUTH_ERROR]', error)
+    if (error instanceof AuthError) {
+      return { status: 'error', message: `Failed to login with ${provider}` }
+    }
+    throw error
   }
 }
