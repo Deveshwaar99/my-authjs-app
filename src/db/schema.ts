@@ -26,11 +26,6 @@ export const users = pgTable('user', {
   image: text('image'),
 })
 
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
-  authenticators: many(authenticators),
-}))
-
 export const accounts = pgTable(
   'account',
   {
@@ -55,27 +50,6 @@ export const accounts = pgTable(
   }),
 )
 
-// export const accountsRelations = relations(accounts, ({ one }) => ({
-//   user: one(users, {
-//     fields: [accounts.userId],
-//     references: [users.id],
-//   }),
-// }))
-
-export const verificationTokens = pgTable(
-  'verificationToken',
-  {
-    identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
-  },
-  verificationToken => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
-  }),
-)
-
 export const authenticators = pgTable(
   'authenticator',
   {
@@ -96,6 +70,32 @@ export const authenticators = pgTable(
     }),
   }),
 )
+
+export const verificationTokens = pgTable(
+  'verificationToken',
+  {
+    identifier: text('identifier').notNull(),
+    token: text('token').notNull(),
+    expires: timestamp('expires', { mode: 'date' }).notNull(),
+  },
+  verificationToken => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  }),
+)
+
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  authenticators: many(authenticators),
+}))
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}))
 
 export const authenticatorsRelations = relations(authenticators, ({ one }) => ({
   user: one(users, {
