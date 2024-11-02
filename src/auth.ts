@@ -3,9 +3,16 @@ import NextAuth from 'next-auth'
 import authConfig from './auth.config'
 import { getUserById } from './data/user'
 import { db } from './db'
-import { accounts, authenticators, rolesEnumType, users, verificationTokens } from './db/schema'
+import { accounts, authenticators, users, verificationTokens } from './db/schema'
+import { eq } from 'drizzle-orm'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  events: {
+    linkAccount: async ({ user }) => {
+      if (!user.id) return
+      await db.update(users).set({ emailVerified: new Date() }).where(eq(users.id, user.id))
+    },
+  },
   callbacks: {
     session: async ({ token, session }) => {
       if (token?.sub && session?.user) {
