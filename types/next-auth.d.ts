@@ -1,4 +1,4 @@
-import type { rolesEnumType } from '@/db/schema'
+import type { Role } from '@/db/schema'
 import NextAuth from 'next-auth'
 
 declare module 'next-auth' {
@@ -7,7 +7,7 @@ declare module 'next-auth' {
    */
   interface Session {
     user: {
-      role?: rolesEnumType
+      role?: Role
     } & DefaultSession['user']
   }
 }
@@ -18,6 +18,6 @@ declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
     /** OpenID ID Token */
-    role?: rolesEnumType
+    role?: Role
   }
 }
