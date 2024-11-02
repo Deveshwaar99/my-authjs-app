@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { useTransition } from 'react'
 import { Button } from '../ui/button'
-import { loginWithProvider } from '@/actions/login-action'
+// import { loginWithProvider } from '@/actions/login-action'
 
 const githubLogo = '/github.svg'
 const googleLogo = '/google.svg'
@@ -14,8 +14,8 @@ function Social() {
   const [isPending, startTransition] = useTransition()
   const onClick = (provider: 'google' | 'github') => {
     startTransition(async () => {
-      // signIn(provider, { redirectTo: DEFAULT_LOGIN_REDIRECT })
-      await loginWithProvider(provider)
+      signIn(provider, { redirectTo: DEFAULT_LOGIN_REDIRECT })
+      // await loginWithProvider(provider)
     })
   }
   return (
