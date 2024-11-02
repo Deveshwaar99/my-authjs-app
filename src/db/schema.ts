@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
   boolean,
   integer,
@@ -8,15 +9,15 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core'
-import type { AdapterAccountType } from 'next-auth/adapters'
+import type { AdapterAccount } from 'next-auth/adapters'
 
-export const rolesEnum = pgEnum('rolesEnum', ['USER', 'ADMIN'])
+const generateUUID = () => crypto.randomUUID()
+
+export const rolesEnum = pgEnum('role', ['USER', 'ADMIN'])
+export type Role = (typeof rolesEnum.enumValues)[number]
 
 export const users = pgTable('user', {
-  id: text('id')
-    .primaryKey()
-    .notNull()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: text('id').primaryKey().notNull().$defaultFn(generateUUID),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   password: varchar('password', { length: 60 }),
@@ -25,13 +26,18 @@ export const users = pgTable('user', {
   image: text('image'),
 })
 
+export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  authenticators: many(authenticators),
+}))
+
 export const accounts = pgTable(
   'account',
   {
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccountType>().notNull(),
+    type: text('type').$type<AdapterAccount['type']>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),
@@ -49,7 +55,12 @@ export const accounts = pgTable(
   }),
 )
 
-//
+// export const accountsRelations = relations(accounts, ({ one }) => ({
+//   user: one(users, {
+//     fields: [accounts.userId],
+//     references: [users.id],
+//   }),
+// }))
 
 export const verificationTokens = pgTable(
   'verificationToken',
@@ -80,10 +91,25 @@ export const authenticators = pgTable(
     transports: text('transports'),
   },
   authenticator => ({
-    compositePK: primaryKey({
+    compositePk: primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
     }),
   }),
 )
 
-export type rolesEnumType = (typeof rolesEnum.enumValues)[number]
+export const authenticatorsRelations = relations(authenticators, ({ one }) => ({
+  user: one(users, {
+    fields: [authenticators.userId],
+    references: [users.id],
+  }),
+}))
+
+// Types
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
+export type Account = typeof accounts.$inferSelect
+export type NewAccount = typeof accounts.$inferInsert
+export type Authenticator = typeof authenticators.$inferSelect
+export type NewAuthenticator = typeof authenticators.$inferInsert
+export type VerificationToken = typeof verificationTokens.$inferSelect
+export type NewVerificationToken = typeof verificationTokens.$inferInsert
