@@ -7,7 +7,7 @@ const font = Poppins({
 })
 
 type HeaderProps = {
-  label: string
+  label?: string
 }
 function Header({ label }: HeaderProps) {
   return (
