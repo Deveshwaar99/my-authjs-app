@@ -7,6 +7,10 @@ import { accounts, authenticators, users, verificationTokens } from './db/schema
 import { eq } from 'drizzle-orm'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error',
+  },
   events: {
     linkAccount: async ({ user }) => {
       if (!user.id) return

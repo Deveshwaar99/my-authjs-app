@@ -19,8 +19,15 @@ import FormStatus from '@/components/form-status'
 import { useState, useTransition } from 'react'
 import { loginAction } from '@/actions/login-action'
 import { LoginSchema } from '@/schema'
+import { useSearchParams } from 'next/navigation'
 
 function LoginForm() {
+  const searchParams = useSearchParams()
+  const urlError =
+    searchParams.get('error') === 'OAuthAccountNotLinked'
+      ? ({ status: 'error', message: 'Email already in use with different provider!' } as const)
+      : undefined
+
   const [formStatus, setFormStatus] = useState<
     { status: 'error' | 'success'; message: string } | undefined
   >()
@@ -84,7 +91,10 @@ function LoginForm() {
               )}
             />
           </div>
-          <FormStatus status={formStatus?.status} message={formStatus?.message} />
+          <FormStatus
+            status={formStatus?.status || urlError?.status}
+            message={formStatus?.message || urlError?.message}
+          />
           <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
