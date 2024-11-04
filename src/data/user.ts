@@ -30,3 +30,12 @@ export async function getUserById(id: string) {
     return null
   }
 }
+
+export async function verifyUserEmailById(id: string, email: string) {
+  try {
+    await db.update(users).set({ email, emailVerified: new Date() }).where(eq(users.id, id))
+  } catch (error) {
+    console.error('[VERIFY_USER_EMAIL_BY_ID_ERROR]', error)
+    throw new Error('Failed to verify user email.')
+  }
+}
