@@ -6,6 +6,7 @@ import {
   deleteExistingVerificationTokens,
   generateVerificationToken,
 } from '@/data/verificationToken'
+import { sendVerificationEmail } from '@/lib/email'
 import { DEFAULT_LOGIN_REDIRECT } from '@/middleware'
 import { LoginSchema } from '@/schema'
 import { AuthError } from 'next-auth'
@@ -35,7 +36,8 @@ export const loginAction = async (
 
     if (!existingUser.emailVerified) {
       await deleteExistingVerificationTokens(email)
-      await generateVerificationToken(email)
+      const verificationToken = await generateVerificationToken(email)
+      await sendVerificationEmail(verificationToken.email, verificationToken.token)
       return { status: 'success', message: 'Verification email sent!' }
     }
 

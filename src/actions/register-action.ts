@@ -8,6 +8,7 @@ import {
 } from '@/data/verificationToken'
 import { db } from '@/db'
 import { users } from '@/db/schema'
+import { sendVerificationEmail } from '@/lib/email'
 import { RegisterSchemaBackend } from '@/schema'
 import bcryptjs from 'bcryptjs'
 
@@ -35,8 +36,12 @@ export async function registerAction(values: unknown) {
   try {
     await db.transaction(async trx => {
       await trx.insert(users).values({ name, email, password: hashedPassword })
-      await deleteExistingVerificationTokens(email, trx as CustomPgTransaction)
-      await generateVerificationToken(email, trx as CustomPgTransaction)
+      await deleteExistingVerificationTokens(email, trx as unknown as CustomPgTransaction)
+      const verificationToken = await generateVerificationToken(
+        email,
+        trx as unknown as CustomPgTransaction,
+      )
+      await sendVerificationEmail(verificationToken.email, verificationToken.token)
     })
 
     return {
