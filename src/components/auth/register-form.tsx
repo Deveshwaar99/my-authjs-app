@@ -6,7 +6,7 @@ import type { z } from 'zod'
 import { CardWrapper } from './card-wrapper'
 
 import { registerAction } from '@/actions/register-action'
-import FormStatus from '@/components/form-status'
+import FormStatus, { type FormStatusProps } from '@/components/form-status'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -21,10 +21,9 @@ import { RegisterSchemaFrontend } from '@/schema'
 import { useState, useTransition } from 'react'
 
 export function RegisterForm() {
-  const [formStatus, setFormStatus] = useState<
-    { status: 'error' | 'success'; message: string } | undefined
-  >()
+  const [registerStatus, setRegisterStatus] = useState<FormStatusProps>()
   const [isPending, startTransition] = useTransition()
+
   const form = useForm<z.infer<typeof RegisterSchemaFrontend>>({
     resolver: zodResolver(RegisterSchemaFrontend),
     defaultValues: {
@@ -37,10 +36,10 @@ export function RegisterForm() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof RegisterSchemaFrontend>) {
-    setFormStatus(undefined)
+    setRegisterStatus(undefined)
     startTransition(async () => {
       const response = await registerAction(values)
-      setFormStatus(response)
+      setRegisterStatus(response)
     })
   }
 
@@ -112,7 +111,7 @@ export function RegisterForm() {
               )}
             />
           </div>
-          <FormStatus status={formStatus?.status} message={formStatus?.message} />
+          <FormStatus formStatusProps={registerStatus} />
           <Button type="submit" disabled={isPending} className="w-full">
             Create an account
           </Button>

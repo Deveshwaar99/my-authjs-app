@@ -1,12 +1,16 @@
 import { cn } from '@/lib/utils'
 import { CheckCircledIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons'
 
-type FormStatusProps = {
-  status?: 'error' | 'success'
-  message?: string
-}
-function FormStatus({ status, message }: FormStatusProps) {
-  if (!status || !message) return null
+export type FormStatusProps =
+  | {
+      status: 'error' | 'success'
+      message: string
+    }
+  | undefined
+
+function FormStatus({ formStatusProps }: { formStatusProps: FormStatusProps }) {
+  if (!formStatusProps) return null
+  const { status, message } = formStatusProps
 
   return (
     <div
@@ -16,8 +20,8 @@ function FormStatus({ status, message }: FormStatusProps) {
         status === 'success' && 'bg-emerald-500/15 text-emerald-500',
       )}
     >
-      {status === 'error' && <ExclamationTriangleIcon className="size-4" />}
-      {status === 'success' && <CheckCircledIcon className="size-4" />}
+      {status === 'error' && <ExclamationTriangleIcon className="size-5" />}
+      {status === 'success' && <CheckCircledIcon className="size-5" />}
       <p>{message}</p>
     </div>
   )

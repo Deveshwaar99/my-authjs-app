@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { CardWrapper } from './card-wrapper'
 
+import { loginAction } from '@/actions/login-action'
+import FormStatus, { type FormStatusProps } from '@/components/form-status'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -15,23 +17,20 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import FormStatus from '@/components/form-status'
-import { useState, useTransition } from 'react'
-import { loginAction } from '@/actions/login-action'
 import { LoginSchema } from '@/schema'
 import { useSearchParams } from 'next/navigation'
+import { useState, useTransition } from 'react'
 
 function LoginForm() {
+  const [registerStatus, setLoginStatus] = useState<FormStatusProps>()
+  const [isPending, startTransition] = useTransition()
+
   const searchParams = useSearchParams()
   const urlError =
     searchParams.get('error') === 'OAuthAccountNotLinked'
       ? ({ status: 'error', message: 'Email already in use with different provider!' } as const)
       : undefined
 
-  const [formStatus, setFormStatus] = useState<
-    { status: 'error' | 'success'; message: string } | undefined
-  >()
-  const [isPending, startTransition] = useTransition()
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -42,10 +41,10 @@ function LoginForm() {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof LoginSchema>) {
-    setFormStatus(undefined)
+    setLoginStatus(undefined)
     startTransition(async () => {
       const response = await loginAction(values)
-      setFormStatus(response)
+      setLoginStatus(response)
     })
   }
 
@@ -91,10 +90,7 @@ function LoginForm() {
               )}
             />
           </div>
-          <FormStatus
-            status={formStatus?.status || urlError?.status}
-            message={formStatus?.message || urlError?.message}
-          />
+          <FormStatus formStatusProps={registerStatus || urlError} />
           <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
