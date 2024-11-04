@@ -4,12 +4,19 @@ import { NextResponse } from 'next/server'
 
 const { auth } = NextAuth(authConfig)
 
-const PUBLIC_ROUTES = ['/', '/auth/login', '/auth/register', '/auth/error'] // List of routes that do not require authentication
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth/login',
+  '/auth/register',
+  '/auth/error',
+  '/auth/new-verification',
+] // List of routes that do not require authentication
 const API_AUTH_PREFIX = '/api/auth' // Prefix for API routes that require authentication
 export const DEFAULT_LOGIN_REDIRECT = '/settings' // Default redirect URL for authenticated users
 
 export default auth(req => {
   const { nextUrl } = req
+  console.info(nextUrl.pathname)
   const isLoggedIn = !!req.auth
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(API_AUTH_PREFIX)
