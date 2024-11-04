@@ -21,8 +21,16 @@ export const loginAction = async (
     const { email, password } = validatedFields.data
 
     const existingUser = await getUserByEmail(email)
-    if (!existingUser || !existingUser.email || !existingUser.password) {
+
+    if (!existingUser || !existingUser.email) {
       return { status: 'error', message: 'Email does not exist!' }
+    }
+
+    if (!existingUser.password) {
+      return {
+        status: 'error',
+        message: 'It looks like you signed up using a different authentication method. ',
+      }
     }
 
     if (!existingUser.emailVerified) {
