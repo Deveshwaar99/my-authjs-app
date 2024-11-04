@@ -7,8 +7,10 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { nanoid } from 'nanoid'
 import type { AdapterAccount } from 'next-auth/adapters'
 
 const generateUUID = () => crypto.randomUUID()
@@ -17,7 +19,9 @@ export const rolesEnum = pgEnum('role', ['USER', 'ADMIN'])
 export type Role = (typeof rolesEnum.enumValues)[number]
 
 export const users = pgTable('user', {
-  id: text('id').primaryKey().notNull().$defaultFn(generateUUID),
+  id: varchar('id', { length: 12 })
+    .primaryKey()
+    .$defaultFn(() => nanoid(12)),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   password: varchar('password', { length: 60 }),
@@ -74,14 +78,15 @@ export const authenticators = pgTable(
 export const verificationTokens = pgTable(
   'verificationToken',
   {
-    identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
+    id: varchar('id', { length: 12 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(12)),
+    email: text('email').notNull().unique(),
+    token: text('token').unique().notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
-  verificationToken => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
+  table => ({
+    uniqueEmailToken: uniqueIndex('unique_email_token').on(table.email, table.token),
   }),
 )
 
