@@ -18,6 +18,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
+    signIn: async ({ user, account }) => {
+      if (!user || !account || !user.id) return false
+
+      if (account.provider === 'credentials') {
+        const existingUser = await getUserById(user.id)
+
+        //Prevent SignIn without email verification
+        if (!existingUser?.emailVerified) return false
+
+        //TODO 2FA Check
+      }
+
+      return true
+    },
     session: async ({ token, session }) => {
       if (token?.sub && session?.user) {
         session.user.id = token.sub
@@ -39,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
-    verificationTokensTable: verificationTokens,
+    // verificationTokensTable: verificationTokens,
     authenticatorsTable: authenticators,
   }),
   session: { strategy: 'jwt' },
