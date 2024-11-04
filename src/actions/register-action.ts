@@ -1,9 +1,10 @@
 'use server'
 
+import type { FormStatusProps } from '@/components/form-status'
 import { getUserByEmail } from '@/data/user'
 import {
   type CustomPgTransaction,
-  deleteExistingVerificationTokens,
+  deleteExistingVerificationTokensByEmail,
   generateVerificationToken,
 } from '@/data/verificationToken'
 import { db } from '@/db'
@@ -12,7 +13,7 @@ import { sendVerificationEmail } from '@/lib/email'
 import { RegisterSchemaBackend } from '@/schema'
 import bcryptjs from 'bcryptjs'
 
-export async function registerAction(values: unknown) {
+export async function registerAction(values: unknown): Promise<FormStatusProps> {
   const validatedFields = RegisterSchemaBackend.safeParse(values)
   if (!validatedFields.success) {
     return {
@@ -36,7 +37,7 @@ export async function registerAction(values: unknown) {
   try {
     await db.transaction(async trx => {
       await trx.insert(users).values({ name, email, password: hashedPassword })
-      await deleteExistingVerificationTokens(email, trx as unknown as CustomPgTransaction)
+      await deleteExistingVerificationTokensByEmail(email, trx as unknown as CustomPgTransaction)
       const verificationToken = await generateVerificationToken(
         email,
         trx as unknown as CustomPgTransaction,

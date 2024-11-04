@@ -1,9 +1,10 @@
 'use server'
 
 import { signIn } from '@/auth'
+import type { FormStatusProps } from '@/components/form-status'
 import { getUserByEmail } from '@/data/user'
 import {
-  deleteExistingVerificationTokens,
+  deleteExistingVerificationTokensByEmail,
   generateVerificationToken,
 } from '@/data/verificationToken'
 import { sendVerificationEmail } from '@/lib/email'
@@ -11,9 +12,7 @@ import { DEFAULT_LOGIN_REDIRECT } from '@/middleware'
 import { LoginSchema } from '@/schema'
 import { AuthError } from 'next-auth'
 
-export const loginAction = async (
-  values: unknown,
-): Promise<{ status: 'error' | 'success'; message: string } | undefined> => {
+export const loginAction = async (values: unknown): Promise<FormStatusProps> => {
   const validatedFields = LoginSchema.safeParse(values)
   try {
     if (!validatedFields.success) {
@@ -35,7 +34,7 @@ export const loginAction = async (
     }
 
     if (!existingUser.emailVerified) {
-      await deleteExistingVerificationTokens(email)
+      await deleteExistingVerificationTokensByEmail(email)
       const verificationToken = await generateVerificationToken(email)
       await sendVerificationEmail(verificationToken.email, verificationToken.token)
       return { status: 'success', message: 'Verification email sent!' }
@@ -54,18 +53,18 @@ export const loginAction = async (
 
     console.error('[LOGIN_ERROR]', error)
 
-    // throw error // CHECK THIS BUG
+    throw error // CHECK THIS BUG
   }
 }
 
-export async function loginWithProvider(provider: 'google' | 'github') {
-  try {
-    await signIn(provider, { redirectTo: DEFAULT_LOGIN_REDIRECT })
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { status: 'error' as const, message: `Failed to login with ${provider}` }
-    }
-    console.error('[PROVIDERS_AUTH_ERROR]', error)
-    // throw error
-  }
-}
+// export async function loginWithProvider(provider: 'google' | 'github') {
+//   try {
+//     await signIn(provider, { redirectTo: DEFAULT_LOGIN_REDIRECT })
+//   } catch (error) {
+//     if (error instanceof AuthError) {
+//       return { status: 'error' as const, message: `Failed to login with ${provider}` }
+//     }
+//     console.error('[PROVIDERS_AUTH_ERROR]', error)
+//     // throw error
+//   }
+// }
