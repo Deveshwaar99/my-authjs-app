@@ -35,18 +35,6 @@ export async function generateVerificationToken(
   }
 }
 
-export async function deleteExistingVerificationTokens(
-  email: string,
-  trx: CustomPgTransaction | CustomPostgresDatabase = db,
-) {
-  try {
-    await trx.delete(verificationTokens).where(eq(verificationTokens.email, email))
-  } catch (error) {
-    console.error(`[DELETE_VERIFICATION_TOKENS_ERROR] Email: ${email}`, error)
-    throw error
-  }
-}
-
 export async function getVerificationTokenByEmail(email: string) {
   try {
     return await db
@@ -55,7 +43,7 @@ export async function getVerificationTokenByEmail(email: string) {
       .where(eq(verificationTokens.email, email))
       .then(res => res[0])
   } catch (error) {
-    console.error('[GET_VERIFICATION_TOKEN_BY_EMAIL_ERROR]', error)
+    console.error(`[GET_VERIFICATION_TOKEN_BY_EMAIL_ERROR] Email: ${email}`, error)
     return null
   }
 }
@@ -68,7 +56,28 @@ export async function getVerificationTokenByToken(token: string) {
       .where(eq(verificationTokens.token, token))
       .then(res => res[0])
   } catch (error) {
-    console.error('[GET_VERIFICATION_TOKEN_BY_TOKEN_ERROR]', error)
+    console.error(`[GET_VERIFICATION_TOKEN_BY_TOKEN_ERROR] TOKEN:${token}`, error)
     return null
+  }
+}
+
+export async function deleteExistingVerificationTokensByEmail(
+  email: string,
+  trx: CustomPgTransaction | CustomPostgresDatabase = db,
+) {
+  try {
+    await trx.delete(verificationTokens).where(eq(verificationTokens.email, email))
+  } catch (error) {
+    console.error(`[DELETE_VERIFICATION_TOKEN_BY_EMAIL_ERROR] Email: ${email}`, error)
+    throw error
+  }
+}
+
+export async function deleteExistingVerificationTokenById(id: string) {
+  try {
+    await db.delete(verificationTokens).where(eq(verificationTokens.id, id))
+  } catch (error) {
+    console.error(`[DELETE_VERIFICATION_TOKEN_BY_ID_ERROR] ID: ${id}`, error)
+    throw error
   }
 }
