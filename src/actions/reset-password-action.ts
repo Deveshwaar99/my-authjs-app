@@ -4,6 +4,7 @@ import {
   deletePasswordResetTokenByEmail,
   deletePasswordResetTokenById,
   generatePasswordResetToken,
+  getPasswordResetTokenByEmail,
   getPasswordResetTokenByToken,
 } from '@/data/password-reset-token'
 import { getUserByEmail, updateUserPassword } from '@/data/user'
@@ -25,9 +26,16 @@ export async function resetPasswordAction(values: unknown) {
   }
 
   try {
-    await deletePasswordResetTokenByEmail(email)
-    const passwordResetToken = await generatePasswordResetToken(email)
-    await sendPasswordResetEmail({ email, token: passwordResetToken.token })
+    const existingToken = await getPasswordResetTokenByEmail(email)
+    const hasTokenExpired = existingToken ? new Date(existingToken.expires) < new Date() : false
+
+    if (!existingToken || hasTokenExpired) {
+      // If no token exists or it has expired, delete old tokens and create a new one
+      await deletePasswordResetTokenByEmail(email)
+      const passwordResetToken = await generatePasswordResetToken(email)
+      await sendPasswordResetEmail({ email, token: passwordResetToken.token })
+    }
+
     return { status: 'success' as const, message: 'Reset email sent!' }
   } catch (error) {
     console.error(`[PASSWORD_RESET_ACTION_ERROR] EMAIL:${email}`, error)
