@@ -6,6 +6,7 @@ import { getUserByEmail } from '@/data/user'
 import {
   deleteExistingVerificationTokensByEmail,
   generateVerificationToken,
+  getVerificationTokenByEmail,
 } from '@/data/verificationToken'
 import { sendVerificationEmail } from '@/lib/email'
 import { DEFAULT_LOGIN_REDIRECT } from '@/middleware'
@@ -34,9 +35,15 @@ export const loginAction = async (values: unknown): Promise<FormStatusProps> => 
     }
 
     if (!existingUser.emailVerified) {
-      await deleteExistingVerificationTokensByEmail(email)
-      const verificationToken = await generateVerificationToken(email)
-      await sendVerificationEmail(verificationToken.email, verificationToken.token)
+      let existingToken = await getVerificationTokenByEmail(email)
+
+      if (!existingToken || new Date(existingToken.expires) < new Date()) {
+        // If no token exists or it has expired, delete old tokens and create a new one
+        await deleteExistingVerificationTokensByEmail(email)
+        existingToken = await generateVerificationToken(email)
+        await sendVerificationEmail(existingToken.email, existingToken.token)
+      }
+
       return { status: 'success', message: 'Verification email sent!' }
     }
 
