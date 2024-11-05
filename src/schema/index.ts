@@ -40,3 +40,17 @@ export const PasswordResetSchema = z.object({
     .string({ required_error: 'Email is required.' })
     .email('Please enter a valid email address.'),
 })
+
+export const NewPasswordSchema = z
+  .object({
+    password: z
+      .string({ required_error: 'Password is required.' })
+      .min(6, 'Password must be at least 6 characters long.'),
+    confirmPassword: z
+      .string({ required_error: 'Please confirm your password.' })
+      .min(6, 'Confirm password must be at least 6 characters long.'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
