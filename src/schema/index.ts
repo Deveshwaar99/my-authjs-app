@@ -34,3 +34,9 @@ export const RegisterSchemaBackend = z.object({
     .min(6, 'Password must be at least 6 characters long.'),
   name: z.string({ required_error: 'Name is required.' }).min(1, 'Name is required.'),
 })
+
+export const PasswordResetSchema = z.object({
+  email: z
+    .string({ required_error: 'Email is required.' })
+    .email('Please enter a valid email address.'),
+})
