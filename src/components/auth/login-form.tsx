@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { LoginSchema } from '@/schema'
 import { useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 
 function LoginForm() {
   const [loginStatus, setLoginStatus] = useState<FormStatusProps>()
@@ -85,6 +86,9 @@ function LoginForm() {
                   <FormControl>
                     <Input placeholder="******" {...field} type="password" disabled={isPending} />
                   </FormControl>
+                  <Button size="sm" variant="link" asChild className="px-0 font-normal">
+                    <Link href="/auth/reset ">Forgot password?</Link>
+                  </Button>
                   <FormMessage />
                 </FormItem>
               )}
