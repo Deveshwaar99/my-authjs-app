@@ -13,12 +13,10 @@ import {
 import { nanoid } from 'nanoid'
 import type { AdapterAccount } from 'next-auth/adapters'
 
-const generateUUID = () => crypto.randomUUID()
-
 export const rolesEnum = pgEnum('role', ['USER', 'ADMIN'])
 export type Role = (typeof rolesEnum.enumValues)[number]
 
-export const users = pgTable('user', {
+export const users = pgTable('users', {
   id: varchar('id', { length: 12 })
     .primaryKey()
     .$defaultFn(() => nanoid(12)),
@@ -31,7 +29,7 @@ export const users = pgTable('user', {
 })
 
 export const accounts = pgTable(
-  'account',
+  'accounts',
   {
     userId: text('userId')
       .notNull()
@@ -47,9 +45,9 @@ export const accounts = pgTable(
     id_token: text('id_token'),
     session_state: text('session_state'),
   },
-  account => ({
+  accounts => ({
     compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
+      columns: [accounts.provider, accounts.providerAccountId],
     }),
   }),
 )
@@ -76,17 +74,41 @@ export const authenticators = pgTable(
 )
 
 export const verificationTokens = pgTable(
-  'verificationToken',
+  'verificationTokens',
   {
     id: varchar('id', { length: 12 })
       .primaryKey()
       .$defaultFn(() => nanoid(12)),
-    email: text('email').notNull().unique(),
+    email: text('email')
+      .notNull()
+      .unique()
+      .references(() => users.email, { onDelete: 'cascade' }),
     token: text('token').unique().notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   table => ({
-    uniqueEmailToken: uniqueIndex('unique_email_token').on(table.email, table.token),
+    uniqueEmailAndVerificationToken: uniqueIndex('unique_email_verification_token').on(
+      table.email,
+      table.token,
+    ),
+  }),
+)
+
+export const PasswordResetTokens = pgTable(
+  'passwordResetTokens',
+  {
+    id: varchar('id', { length: 12 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(12)),
+    email: text('email')
+      .notNull()
+      .unique()
+      .references(() => users.email, { onDelete: 'cascade' }),
+    token: text('token').unique().notNull(),
+    expires: timestamp('expires', { mode: 'date' }).notNull(),
+  },
+  table => ({
+    uniqueEmailAndResetToken: uniqueIndex('unique_email_reset_token').on(table.email, table.token),
   }),
 )
 
