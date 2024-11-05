@@ -4,7 +4,7 @@ import {
   deletePasswordResetTokenByEmail,
   deletePasswordResetTokenById,
   generatePasswordResetToken,
-  getPasswoordResetTokenByToken,
+  getPasswordResetTokenByToken,
 } from '@/data/password-reset-token'
 import { getUserByEmail, updateUserPassword } from '@/data/user'
 import { sendPasswordResetEmail } from '@/lib/email'
@@ -55,7 +55,7 @@ export async function setNewPasswordAction(
       }
     }
     const { password } = validatedFields.data
-    const existingToken = await getPasswoordResetTokenByToken(token)
+    const existingToken = await getPasswordResetTokenByToken(token)
 
     if (!existingToken) {
       return {

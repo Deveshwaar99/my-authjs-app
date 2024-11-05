@@ -40,7 +40,7 @@ export async function deletePasswordResetTokenById(id: string) {
   }
 }
 
-export async function getPasswoordResetTokenByToken(token: string) {
+export async function getPasswordResetTokenByToken(token: string) {
   try {
     return await db
       .select()
@@ -53,7 +53,7 @@ export async function getPasswoordResetTokenByToken(token: string) {
   }
 }
 
-export async function getPasswoordResetTokenByEmail(email: string) {
+export async function getPasswordResetTokenByEmail(email: string) {
   try {
     return await db
       .select()
@@ -61,7 +61,7 @@ export async function getPasswoordResetTokenByEmail(email: string) {
       .where(eq(PasswordResetTokens.email, email))
       .then(res => res[0])
   } catch (error) {
-    console.error('[GET_PASSWORD_RESET_TOKEN_BY_TOKEN_ERROR]', error)
+    console.error('[GET_PASSWORD_RESET_TOKEN_BY_EMAIL_ERROR]', error)
     return null
   }
 }
