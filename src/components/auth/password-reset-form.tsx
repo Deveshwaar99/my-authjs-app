@@ -36,7 +36,7 @@ function PasswordResetForm() {
     setResetStatus(undefined)
     startTransition(async () => {
       const response = await resetPasswordAction(values)
-      //   setResetStatus(response)
+      setResetStatus(response)
     })
   }
 
