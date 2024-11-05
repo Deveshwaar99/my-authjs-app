@@ -79,10 +79,7 @@ export const verificationTokens = pgTable(
     id: varchar('id', { length: 12 })
       .primaryKey()
       .$defaultFn(() => nanoid(12)),
-    email: text('email')
-      .notNull()
-      .unique()
-      .references(() => users.email, { onDelete: 'cascade' }),
+    email: text('email').notNull().unique(),
     token: text('token').unique().notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
@@ -100,11 +97,8 @@ export const PasswordResetTokens = pgTable(
     id: varchar('id', { length: 12 })
       .primaryKey()
       .$defaultFn(() => nanoid(12)),
-    email: text('email')
-      .notNull()
-      .unique()
-      .references(() => users.email, { onDelete: 'cascade' }),
     token: text('token').unique().notNull(),
+    email: text('email').notNull().unique(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   table => ({
