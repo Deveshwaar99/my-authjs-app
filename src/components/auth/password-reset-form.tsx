@@ -18,7 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordResetSchema } from '@/schema'
 import { useState, useTransition } from 'react'
-import { resetPasswordAction } from '@/actions/reset-password'
+import { resetPasswordAction } from '@/actions/reset-password-action'
 
 function PasswordResetForm() {
   const [resetStatus, setResetStatus] = useState<FormStatusProps>()
