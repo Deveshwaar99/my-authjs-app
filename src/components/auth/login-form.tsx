@@ -22,7 +22,7 @@ import { useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
 
 function LoginForm() {
-  const [registerStatus, setLoginStatus] = useState<FormStatusProps>()
+  const [loginStatus, setLoginStatus] = useState<FormStatusProps>()
   const [isPending, startTransition] = useTransition()
 
   const searchParams = useSearchParams()
@@ -90,7 +90,7 @@ function LoginForm() {
               )}
             />
           </div>
-          <FormStatus formStatusProps={registerStatus || urlError} />
+          <FormStatus formStatusProps={loginStatus || urlError} />
           <Button type="submit" disabled={isPending} className="w-full">
             Login
           </Button>
