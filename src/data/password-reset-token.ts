@@ -31,6 +31,14 @@ export async function deletePasswordResetTokenByEmail(email: string) {
     throw error
   }
 }
+export async function deletePasswordResetTokenById(id: string) {
+  try {
+    await db.delete(PasswordResetTokens).where(eq(PasswordResetTokens.id, id))
+  } catch (error) {
+    console.error(`[DELETE_PASSWORD_RESET_TOKEN_BY_ID_ERROR] Email: ${id}`, error)
+    throw error
+  }
+}
 
 export async function getPasswoordResetTokenByToken(token: string) {
   try {
