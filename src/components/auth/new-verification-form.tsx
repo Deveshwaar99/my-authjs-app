@@ -1,6 +1,6 @@
 'use client'
 
-import { verifyEmailUsingVerificationToken } from '@/actions/email-verification'
+import { verifyEmailUsingVerificationToken } from '@/actions/email-verification-action'
 import { CardWrapper } from '@/components/auth/card-wrapper'
 import FormStatus, { type FormStatusProps } from '@/components/form-status'
 import { useSearchParams } from 'next/navigation'
