@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = [
   '/auth/error',
   '/auth/new-verification',
   '/auth/reset',
+  '/auth/new-password',
 ] // List of routes that do not require authentication
 const API_AUTH_PREFIX = '/api/auth' // Prefix for API routes that require authentication
 export const DEFAULT_LOGIN_REDIRECT = '/settings' // Default redirect URL for authenticated users
