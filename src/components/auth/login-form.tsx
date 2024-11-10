@@ -37,6 +37,7 @@ function LoginForm() {
     defaultValues: {
       email: '',
       password: '',
+      twoFactorCode: undefined,
     },
   })
 
@@ -59,40 +60,64 @@ function LoginForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-800">Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="example@email.com"
-                      {...field}
-                      type="email"
-                      disabled={isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-zinc-800">Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="******" {...field} type="password" disabled={isPending} />
-                  </FormControl>
-                  <Button size="sm" variant="link" asChild className="px-0 font-normal">
-                    <Link href="/auth/reset ">Forgot password?</Link>
-                  </Button>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {loginStatus?.status === 'success' && loginStatus.message === 'Enable 2FA' ? (
+              <FormField
+                key="2FA"
+                control={form.control}
+                name="twoFactorCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-zinc-800">Enter 2FA Code</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123456" {...field} type="text" disabled={isPending} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-zinc-800">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="example@email.com"
+                          {...field}
+                          type="email"
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-zinc-800">Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="******"
+                          {...field}
+                          type="password"
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <Button size="sm" variant="link" asChild className="px-0 font-normal">
+                        <Link href="/auth/reset ">Forgot password?</Link>
+                      </Button>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </div>
           <FormStatus formStatusProps={loginStatus || urlError} />
           <Button type="submit" disabled={isPending} className="w-full">
