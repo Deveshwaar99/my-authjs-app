@@ -1,5 +1,6 @@
 import type { Session } from 'next-auth'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 type UserInfoProps = {
   user?: Session['user']
@@ -39,9 +40,7 @@ function UserInfo({ user, label }: UserInfoProps) {
         </div>
         <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
           <p className="text-sm font-medium">Two Factor Authentication</p>
-          <p className="max-w-[180px] truncate rounded-md bg-slate-100 p-1 font-mono text-xs">
-            OFF
-          </p>
+          <Badge variant="default">OFF</Badge>
         </div>
       </CardContent>
     </Card>
