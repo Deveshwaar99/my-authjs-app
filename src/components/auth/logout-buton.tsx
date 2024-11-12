@@ -1,3 +1,5 @@
+'use client'
+
 import { logoutAction } from '@/actions/logout-action'
 import { Button } from '@/components/ui/button'
 import type { PropsWithChildren } from 'react'
