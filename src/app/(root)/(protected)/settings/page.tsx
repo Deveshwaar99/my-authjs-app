@@ -5,18 +5,7 @@ import { Button } from '@/components/ui/button'
 
 async function SettingsPage() {
   const session = await auth()
-  return (
-    <div className="rounded-xl bg-white p-10">
-      {JSON.stringify(session)}
-      <form
-        action={async () => {
-          logoutAction()
-        }}
-      >
-        <UserButton />
-      </form>
-    </div>
-  )
+  return <div className="rounded-xl bg-white p-10">{JSON.stringify(session)}</div>
 }
 
 export default SettingsPage
