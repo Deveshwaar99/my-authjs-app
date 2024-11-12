@@ -6,9 +6,9 @@ declare module 'next-auth' {
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
   export interface Session {
-    user: {
+    user: DefaultSession['user'] & {
       role?: Role
-    } & DefaultSession['user']
+    }
   }
 }
 
