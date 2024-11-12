@@ -9,7 +9,7 @@ export const LoginSchema = z.object({
     .string({ required_error: '2FA is missing' })
     .length(6, 'Two-factor code must be a 6-digit number.')
     .optional()
-    .refine(val => /^[0-9]{6}$/.test(val || ''), {
+    .refine(val => !val || /^[0-9]{6}$/.test(val || ''), {
       message: 'Two-factor code must be a 6-digit number.',
     }),
 })
