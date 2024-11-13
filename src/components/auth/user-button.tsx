@@ -23,10 +23,10 @@ function UserButton() {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="flex w-40 items-center justify-center">
         <LogoutButton>
-          <DropdownMenuItem className="mr-2 size-4">
-            <ExitIcon className="mr-2 size-4" />
+          <DropdownMenuItem className="hover:bg-inherit focus:bg-transparent">
+            <ExitIcon className="size-4" />
             Logout
           </DropdownMenuItem>
         </LogoutButton>
