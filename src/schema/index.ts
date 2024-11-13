@@ -61,3 +61,32 @@ export const NewPasswordSchema = z
     message: 'Passwords do not match.',
     path: ['confirmPassword'],
   })
+
+export const SettingsSchema = z
+  .object({
+    name: z.string().min(1, { message: 'Name cannot be empty' }).optional(),
+    email: z.string().email({ message: 'Invalid email address format' }).optional(),
+    role: z
+      .enum(['ADMIN', 'USER'], {
+        errorMap: () => ({ message: "Role must be either 'Admin' or 'User'" }),
+      })
+      .optional(),
+    isTwoFactorEnabled: z.boolean().optional(),
+
+    currentPassword: z
+      .string()
+      .min(6, { message: 'Current password must be at least 6 characters long' })
+      .optional(),
+    newPassword: z
+      .string()
+      .min(6, { message: 'New password must be at least 6 characters long' })
+      .optional(),
+    confirmPassword: z
+      .string()
+      .min(6, { message: 'Confirm password must be at least 6 characters long' })
+      .optional(),
+  })
+  .refine(data => !data.newPassword || data.newPassword === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: "Passwords don't match",
+  })
