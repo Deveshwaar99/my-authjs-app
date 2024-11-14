@@ -5,6 +5,7 @@ import { getUserById } from './data/user'
 import { db } from './db'
 import { accounts, authenticators, users, verificationTokens } from './db/schema'
 import { eq } from 'drizzle-orm'
+import { getAccountByUserId } from './data/account'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
@@ -36,8 +37,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token?.sub && session?.user) {
         session.user.id = token.sub
       }
+      if (token?.name && session?.user) {
+        session.user.role = token.name
+      }
+      if (token?.email && session?.user) {
+        session.user.role = token.email
+      }
       if (token?.role && session?.user) {
         session.user.role = token.role
+      }
+      if (session?.user) {
+        session.user.isOAuth = token.isOAuth as boolean
       }
       return session
     },
@@ -45,7 +55,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!token.sub) return token
       const existingUser = await getUserById(token.sub)
       if (existingUser) {
+        const OAuthAccount = await getAccountByUserId(existingUser.id)
+        token.name = existingUser.name
+        token.email = existingUser.email
         token.role = existingUser.role
+        token.isOAuth = !!OAuthAccount
       }
       return token
     },
