@@ -1,5 +1,6 @@
 'use client'
 
+import { updateUserInfo } from '@/actions/settings'
 import type { FormStatusProps } from '@/components/form-status'
 import FormStatus from '@/components/form-status'
 import { Button } from '@/components/ui/button'
@@ -34,15 +35,21 @@ function SettingsPage() {
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
+      name: user?.name || undefined,
+      email: user?.email || undefined,
       role: user?.role || 'USER',
       isTwoFactorEnabled: user?.isTwoFactorEnabled || false,
+      currentPassword: undefined,
+      newPassword: undefined,
+      confirmPassword: undefined,
     },
   })
 
-  const onSubmit = () => {
-    startTransition(() => {})
+  const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
+    startTransition(async () => {
+      const response = await updateUserInfo(values)
+      setSettingsFormStatus(response)
+    })
   }
 
   const resetForm = () => {
@@ -96,7 +103,8 @@ function SettingsPage() {
                         placeholder="example@email.com"
                         {...field}
                         type="email"
-                        disabled={isPending || user.isOAuth} //OAuth users cannot change email
+                        // disabled={isPending || user.isOAuth} //OAuth users cannot change email
+                        disabled
                       />
                     </FormControl>
                     <FormMessage />
