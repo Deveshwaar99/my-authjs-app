@@ -19,11 +19,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { LoginSchema } from '@/schema'
 import { useSearchParams } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { Suspense, useState, useTransition } from 'react'
 import Link from 'next/link'
 
-function LoginForm() {
+function LoginFormComponent() {
   const [loginStatus, setLoginStatus] = useState<FormStatusProps>()
+  const [isTwoFactor, setIsTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   const searchParams = useSearchParams()
@@ -37,7 +38,7 @@ function LoginForm() {
     defaultValues: {
       email: '',
       password: '',
-      twoFactorCode: undefined,
+      twoFactorOtp: undefined,
     },
   })
 
@@ -46,7 +47,12 @@ function LoginForm() {
     setLoginStatus(undefined)
     startTransition(async () => {
       const response = await loginAction(values)
-      setLoginStatus(response)
+      if (response.twoFactor) {
+        setIsTwoFactor(true)
+        return
+      }
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
+      setLoginStatus({ status: response.status!, message: response.message! })
     })
   }
 
@@ -60,11 +66,11 @@ function LoginForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-4">
-            {loginStatus?.status === 'success' && loginStatus.message === 'Enable 2FA' ? (
+            {isTwoFactor ? (
               <FormField
                 key="2FA"
                 control={form.control}
-                name="twoFactorCode"
+                name="twoFactorOtp"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-zinc-800">Enter 2FA Code</FormLabel>
@@ -129,4 +135,10 @@ function LoginForm() {
   )
 }
 
-export { LoginForm }
+export function LoginForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginFormComponent />
+    </Suspense>
+  )
+}
