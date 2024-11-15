@@ -16,6 +16,8 @@ import type { AdapterAccount } from 'next-auth/adapters'
 export const rolesEnum = pgEnum('role', ['USER', 'ADMIN'])
 export type Role = (typeof rolesEnum.enumValues)[number]
 
+export const twoFactorTokenEnum = pgEnum('twoFactorTokenEnum', ['PENDING', 'CONFIRMED', 'EXPIRED'])
+
 export const users = pgTable('users', {
   id: varchar('id', { length: 12 })
     .primaryKey()
@@ -26,6 +28,7 @@ export const users = pgTable('users', {
   role: rolesEnum('role').default('USER').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
+  isTwoFactorEnabled: boolean('isTwoFactorEnabled').default(false),
 })
 
 export const accounts = pgTable(
@@ -105,6 +108,20 @@ export const PasswordResetTokens = pgTable(
     uniqueEmailAndResetToken: uniqueIndex('unique_email_reset_token').on(table.email, table.token),
   }),
 )
+
+export const TwoFactorConfirmationTokens = pgTable('twoFactorConfirmationTokens', {
+  id: varchar('id', { length: 12 })
+    .primaryKey()
+    .$defaultFn(() => nanoid(12)),
+  otp: varchar('otp', { length: 6 }).notNull(),
+  userId: text('userId')
+    .unique()
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  email: text('email').notNull().unique(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  status: twoFactorTokenEnum('status').default('PENDING').notNull(),
+})
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
