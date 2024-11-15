@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendVerificationEmail(email: string, token: string) {
@@ -15,6 +16,7 @@ export async function sendVerificationEmail(email: string, token: string) {
     console.error('[SEND_VERIFICATION_EMAIL_ERROR]', error)
   }
 }
+
 export async function sendPasswordResetEmail({ email, token }: { email: string; token: string }) {
   const RESET_LINK = `http://localhost:3000/auth/new-password?token=${token}`
 
@@ -26,6 +28,18 @@ export async function sendPasswordResetEmail({ email, token }: { email: string; 
   })
 
   if (error) {
-    console.error('[SEND_VERIFICATION_EMAIL_ERROR]', error)
+    console.error('[SEND_PASSWORD_RESET_EMAIL_ERROR]', error)
+  }
+}
+export async function sendTwoFactorTokenEmail({ email, otp }: { email: string; otp: string }) {
+  const { error } = await resend.emails.send({
+    from: 'Acme <onboarding@resend.dev>',
+    to: [email],
+    subject: '2FA Code',
+    html: `<p>Your 2FA code: ${otp}</p>`,
+  })
+
+  if (error) {
+    console.error('[SEND_2FA_EMAIL_ERROR]', error)
   }
 }
