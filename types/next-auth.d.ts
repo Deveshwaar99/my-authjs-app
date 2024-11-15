@@ -8,6 +8,8 @@ declare module 'next-auth' {
   export interface Session {
     user: DefaultSession['user'] & {
       role?: Role
+      isTwoFactorEnabled: boolean
+      isOAuth: boolean
     }
   }
 }
