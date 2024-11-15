@@ -18,7 +18,7 @@ export async function generatePasswordResetToken(email: string) {
 
     return passwordResetToken
   } catch (error) {
-    console.error(`[GENERATE_VERIFICATION_TOKEN_ERROR] Email: ${email}`, error)
+    console.error(`[GENERATE_PASSWORD_RESET_TOKEN_ERROR] Email: ${email}`, error)
     throw error
   }
 }
