@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation'
 import type { PropsWithChildren } from 'react'
 
 function LogoutButton({ children }: PropsWithChildren) {
+  const router = useRouter()
   const handleClick = async () => {
     await logoutAction()
+    router.push('/')
   }
 
   return (
