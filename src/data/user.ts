@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { Role, users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import bcryptjs from 'bcryptjs'
 
@@ -55,5 +55,34 @@ export async function updateUserPassword({
   } catch (error) {
     console.error('[UPDATE_USER_PASSWORD_ERROR]', error)
     throw new Error('Failed to verify user email.')
+  }
+}
+
+export async function updateOAuthUserInfo(
+  userId: string,
+  updates: Partial<{ name: string; role: 'USER' | 'ADMIN'; isTwoFactorEnabled: boolean }>,
+) {
+  try {
+    await db.update(users).set(updates).where(eq(users.id, userId))
+  } catch (error) {
+    console.error('[UPDATE_OAUTH_USER_INFO_ERROR]', error)
+    throw new Error('Failed to update user info.')
+  }
+}
+
+export async function updateCredentialsUserInfo(
+  userId: string,
+  updates: Partial<{
+    name: string
+    role: 'USER' | 'ADMIN'
+    isTwoFactorEnabled: boolean
+    password: string
+  }>,
+) {
+  try {
+    await db.update(users).set(updates).where(eq(users.id, userId))
+  } catch (error) {
+    console.error('[UPDATE_CREDENTIALS_USER_INFO_ERROR]', error)
+    throw new Error('Failed to update user info.')
   }
 }
