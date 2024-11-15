@@ -5,7 +5,7 @@ export const LoginSchema = z.object({
   password: z
     .string({ required_error: 'Password is required.' })
     .min(6, 'Password must be at least 6 characters long.'),
-  twoFactorCode: z
+  twoFactorOtp: z
     .string({ required_error: '2FA is missing' })
     .length(6, 'Two-factor code must be a 6-digit number.')
     .optional()
