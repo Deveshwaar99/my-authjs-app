@@ -4,10 +4,10 @@ import { verifyEmailUsingVerificationToken } from '@/actions/email-verification-
 import { CardWrapper } from '@/components/auth/card-wrapper'
 import FormStatus, { type FormStatusProps } from '@/components/form-status'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { BeatLoader } from 'react-spinners'
 
-function NewVerificationForm() {
+function NewVerificationFormComponent() {
   const [verificationStatus, setVerificationStatus] = useState<FormStatusProps>()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -40,4 +40,10 @@ function NewVerificationForm() {
   )
 }
 
-export default NewVerificationForm
+export function NewVerificationForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewVerificationFormComponent />
+    </Suspense>
+  )
+}
