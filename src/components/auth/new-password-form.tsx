@@ -19,9 +19,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { NewPasswordSchema } from '@/schema'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { Suspense, useEffect, useState, useTransition } from 'react'
 
-export function NewPasswordForm() {
+function NewPasswordFormComponent() {
   const [passwordResetStatus, setPasswordResetStatus] = useState<FormStatusProps>()
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -99,5 +99,13 @@ export function NewPasswordForm() {
         </form>
       </Form>
     </CardWrapper>
+  )
+}
+
+export function NewPasswordForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewPasswordFormComponent />
+    </Suspense>
   )
 }
