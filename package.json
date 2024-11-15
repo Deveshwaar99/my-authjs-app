@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbo ",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -37,7 +37,7 @@
     "postgres": "^3.4.5",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
-    "react-hook-form": "^7.53.1",
+    "react-hook-form": "^7.53.2",
     "react-spinners": "^0.14.1",
     "resend": "^4.0.1-alpha.0",
     "server-only": "^0.0.1",
